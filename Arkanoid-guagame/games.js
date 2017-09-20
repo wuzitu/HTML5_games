@@ -43,10 +43,21 @@ var Ball = function () {
         if (o.x <= 0 || o.x >= 400-o.image.width) {
             o.speedX *= -1
         }
-        if (o.y <= 0) {
+        if (o.y <= 0 || o.y >= 300-o.image.height) {
             o.speedY *= -1
         }
     }
+    return o
+}
+
+var Block = function () {
+    var o = {
+        image: imageFromPath('block.png'),
+        x: 80,
+        y: 120,
+        alive: true,
+    }
+    
     return o
 }
 var imageFromPath = function (path) {
@@ -135,6 +146,8 @@ var __main = function () {
     var paddle = Paddle()
     // ball
     var ball = Ball()
+    // block
+    var block = Block()
     game.ragisterAction('65', function(){
         //a
         paddle.moveLeft()
@@ -151,13 +164,19 @@ var __main = function () {
         ball.move()
         if(decideCollide(ball, paddle)){
             ball.speedY *= -1
-            if(ball.y+ball.image.height > paddle.y)
+            if(ball.y+ball.image.height > paddle.y + paddle.image.height*0.3)
                 ball.speedX *= -1
+        }
+        if(decideCollide(ball, block) && block.alive){
+            block.alive = false
+            ball.speedY *= -1
         }
     }
     game.draw = function () {
         game.drawImage(paddle)
         game.drawImage(ball)
+        if(block.alive)
+            game.drawImage(block)
     }
 }
 
